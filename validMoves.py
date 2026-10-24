@@ -1,3 +1,5 @@
+import random
+
 state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
 
 def get_valid_moves(state):
@@ -62,3 +64,52 @@ first_result = generate_next_states(state)
 second_result = generate_next_states(state)
 
 assert first_result == second_result
+
+state = [4, 2, 3, 5, 1, 6, 0, 7, 8]
+
+def count_inversions(state):
+    inversion_count = 0
+    for index, currentState in enumerate(state):
+        if currentState == 0:
+            continue
+        for x in state[index + 1:]:
+            if x == 0:
+                 continue
+            if currentState > x:
+                inversion_count += 1
+    return inversion_count
+count_inversions(state)
+
+#tests
+assert count_inversions([1, 2, 3, 4, 5, 6, 7, 8, 0]) == 0
+assert count_inversions([2, 1, 3, 4, 5, 6, 8, 7, 0]) == 2
+assert count_inversions([3, 2, 1, 4, 5, 6, 7, 8, 0]) == 3
+assert count_inversions([8, 7, 6, 5, 4, 3, 2, 1, 0]) == 28
+
+def is_solvable(state):
+     inversion_count = count_inversions(state)
+     return inversion_count % 2 == 0
+
+#tests
+assert is_solvable([1, 2, 3, 4, 5, 6, 7, 8, 0]) == True
+assert is_solvable([1, 2, 3, 4, 5, 6, 8, 7, 0]) == False
+assert is_solvable([2, 1, 3, 4, 5, 6, 8, 7, 0]) == True
+
+def generate_random_state():
+    while True:
+        numbers = list(range(9))
+        random.shuffle(numbers)
+        if is_solvable(numbers):
+            return numbers           
+generate_random_state()
+
+#tests
+random_state = generate_random_state()
+
+assert len(random_state) == 9
+assert sorted(random_state) == list(range(9))
+assert is_solvable(random_state)
+
+for i in range(100):
+    new_state = generate_random_state()
+    assert is_solvable(new_state),  f"Invalid state: {new_state}"
