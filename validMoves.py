@@ -113,3 +113,37 @@ assert is_solvable(random_state)
 for i in range(100):
     new_state = generate_random_state()
     assert is_solvable(new_state),  f"Invalid state: {new_state}"
+
+current_state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
+
+g_scores = {
+    tuple(current_state): 4
+}
+
+next_states = generate_next_states(current_state)
+
+for state in next_states:
+    state_tuple = tuple(state)
+    new_g = g_scores[tuple(current_state)] + 1
+    if state_tuple not in g_scores or new_g < g_scores[state_tuple]:
+        g_scores[state_tuple] = new_g
+print(g_scores)
+
+state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
+def hamming_distance(state):
+    misplaced_tiles = 0
+    goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+    for index, tile in enumerate(state):
+        if tile != goal_state[index] and tile != 0:
+            misplaced_tiles += 1
+    return misplaced_tiles
+hamming_distance(state)
+
+#tests
+assert hamming_distance([1, 2, 3, 4, 5, 6, 7, 8, 0]) == 0
+
+assert hamming_distance([1, 2, 3, 4, 5, 6, 7, 0, 8]) == 1
+
+assert hamming_distance([1, 2, 3, 4, 5, 6, 0, 7, 8]) == 2
+
+assert hamming_distance([1, 2, 3, 4, 0, 6, 7, 5, 8]) == 2
