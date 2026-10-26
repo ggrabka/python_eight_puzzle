@@ -1,4 +1,5 @@
 import random
+import heapq
 
 state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
 
@@ -130,20 +131,114 @@ for state in next_states:
 print(g_scores)
 
 state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
-def hamming_distance(state):
+def calculate_hamming_distance(state):
     misplaced_tiles = 0
     goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
     for index, tile in enumerate(state):
         if tile != goal_state[index] and tile != 0:
             misplaced_tiles += 1
     return misplaced_tiles
-hamming_distance(state)
+calculate_hamming_distance(state)
 
 #tests
-assert hamming_distance([1, 2, 3, 4, 5, 6, 7, 8, 0]) == 0
+assert calculate_hamming_distance([1, 2, 3, 4, 5, 6, 7, 8, 0]) == 0
 
-assert hamming_distance([1, 2, 3, 4, 5, 6, 7, 0, 8]) == 1
+assert calculate_hamming_distance([1, 2, 3, 4, 5, 6, 7, 0, 8]) == 1
 
-assert hamming_distance([1, 2, 3, 4, 5, 6, 0, 7, 8]) == 2
+assert calculate_hamming_distance([1, 2, 3, 4, 5, 6, 0, 7, 8]) == 2
 
-assert hamming_distance([1, 2, 3, 4, 0, 6, 7, 5, 8]) == 2
+assert calculate_hamming_distance([1, 2, 3, 4, 0, 6, 7, 5, 8]) == 2
+
+def get_row_and_column(state):
+    coordinates = {}
+    tiles_dimension = 3
+    for index, tile in enumerate(state):
+        coordinates[tile] = [index // tiles_dimension, index % tiles_dimension]
+    return coordinates
+
+
+get_row_and_column(state)
+
+current_coordinates = get_row_and_column(state)
+goal_coordinates = get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0])
+
+
+def calculate_manhattan_distance(current_coordinates, goal_coordinates):
+    distance = {}
+    for tile in current_coordinates:
+        if tile == 0:
+            continue
+        distance[tile] = abs(
+            current_coordinates[tile][0] - goal_coordinates[tile][0]
+        ) + abs(current_coordinates[tile][1] - goal_coordinates[tile][1])
+    return sum(distance.values())
+
+
+calculate_manhattan_distance(current_coordinates, goal_coordinates)
+
+# tests
+assert (
+    calculate_manhattan_distance(
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
+    )
+    == 0
+)
+
+assert (
+    calculate_manhattan_distance(
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 0, 8]),
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
+    )
+    == 1
+)
+
+current_state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
+
+g_scores = {
+    tuple(current_state): 0
+}
+
+goal_coordinates = get_row_and_column(
+    [1, 2, 3, 4, 5, 6, 7, 8, 0]
+)
+
+hamming_score = calculate_hamming_distance(current_state)
+manhattan_score = calculate_manhattan_distance(get_row_and_column(current_state), goal_coordinates)
+current_score = g_scores[tuple(current_state)]
+print("Current score: ", current_score)
+print("Hamming score: ", hamming_score)
+
+def calculate_total_cost(current_score, distance_score):
+    return current_score + distance_score
+
+calculate_total_cost(current_score, hamming_score)
+
+state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
+state_B = (1, 2, 3, 4, 5, 6, 7, 0, 8)
+state_C = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+
+frontier = []
+
+heapq.heappush(frontier, (8, state_A))
+heapq.heappush(frontier, (3, state_B))
+heapq.heappush(frontier, (5, state_C))
+
+visited_states = set()
+
+state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
+
+visited_states.add(state_A)
+
+frontier = []
+heapq.heappush(frontier, (10, state_A))
+
+def find_smallest_priority(frontier):
+    while frontier:
+        next_entry = frontier[0]
+        if next_entry[1] in visited_states:
+            heapq.heappop(frontier)
+            next_entry = frontier[0]
+    return heapq.heappop(frontier)
+
+find_smallest_priority(frontier)

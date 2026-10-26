@@ -80,3 +80,23 @@ assert (
     )
     == 1
 )
+
+state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
+state_B = (1, 2, 3, 4, 5, 6, 7, 0, 8)
+state_C = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+
+frontier = [
+    (8, state_A),
+    (3, state_B),
+    (5, state_C)
+]
+
+next_entry = min(frontier)
+print(next_entry)
+
+def find_smallest_priority(frontier):
+    state_min = min(frontier)
+    frontier.remove(state_min)
+    return state_min
+
+find_smallest_priority(frontier)
