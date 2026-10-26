@@ -32,8 +32,51 @@ print(g_scores[state_A])
 
 current_state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
 
-g_scores = {
-    tuple(current_state): 4
-}
+g_scores = {tuple(current_state): 4}
 
-next_states = generate_next_states(current_state)
+state = [1, 2, 3, 4, 5, 6, 8, 0, 7]
+
+
+def get_row_and_column(state):
+    coordinates = {}
+    tiles_dimension = 3
+    for index, tile in enumerate(state):
+        coordinates[tile] = [index // tiles_dimension, index % tiles_dimension]
+    return coordinates
+
+
+get_row_and_column(state)
+
+current_coordinates = get_row_and_column(state)
+goal_coordinates = get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0])
+
+
+def calculate_Manhattan_distance(current_coordinates, goal_coordinates):
+    distance = {}
+    for tile in current_coordinates:
+        if tile == 0:
+            continue
+        distance[tile] = abs(
+            current_coordinates[tile][0] - goal_coordinates[tile][0]
+        ) + abs(current_coordinates[tile][1] - goal_coordinates[tile][1])
+    return sum(distance.values())
+
+
+calculate_Manhattan_distance(current_coordinates, goal_coordinates)
+
+# tests
+assert (
+    calculate_Manhattan_distance(
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
+    )
+    == 0
+)
+
+assert (
+    calculate_Manhattan_distance(
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 0, 8]),
+        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
+    )
+    == 1
+)
