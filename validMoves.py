@@ -4,24 +4,24 @@ import heapq
 state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
 
 def get_valid_moves(state):
-    zero_index = state.index(0)
-    zero_index_row = zero_index // 3
+    zero_value_index = state.index(0)
+    zero_value_index_row = zero_value_index // 3
 
     row_neighbours = []
-    left = zero_index - 1
-    right = zero_index + 1  
+    left = zero_value_index - 1
+    right = zero_value_index + 1  
  
     #Horizontal moves
-    if left // 3 == zero_index_row:
+    if left // 3 == zero_value_index_row:
          row_neighbours.append(left)
-    if right // 3 == zero_index_row:
+    if right // 3 == zero_value_index_row:
              row_neighbours.append(right)    
          
     #Vertical moves
-    if zero_index + 3 <= len(state) -1:
-           row_neighbours.append(zero_index + 3) 
-    if zero_index - 3 >= 0:
-        row_neighbours.append(zero_index - 3)
+    if zero_value_index + 3 <= len(state) -1:
+           row_neighbours.append(zero_value_index + 3) 
+    if zero_value_index - 3 >= 0:
+        row_neighbours.append(zero_value_index - 3)
     return row_neighbours
 
 def generate_next_states(state):
@@ -29,8 +29,8 @@ def generate_next_states(state):
     move_collection = []
     for move in valid_moves:
         new_list = state.copy()
-        index_for_0_value = new_list.index(0)
-        new_list[index_for_0_value], new_list[move] = new_list[move], new_list[index_for_0_value]
+        zero_value_index = new_list.index(0)
+        new_list[zero_value_index], new_list[move] = new_list[move], new_list[zero_value_index]
         move_collection.append(new_list)
     return move_collection
 
@@ -233,12 +233,20 @@ visited_states.add(state_A)
 frontier = []
 heapq.heappush(frontier, (10, state_A))
 
-def find_smallest_priority(frontier):
+def find_smallest_priority(frontier, visited_states):
     while frontier:
-        next_entry = frontier[0]
-        if next_entry[1] in visited_states:
-            heapq.heappop(frontier)
-            next_entry = frontier[0]
-    return heapq.heappop(frontier)
+        next_entry = heapq.heappop(frontier)
+        if next_entry[1] not in visited_states:
+            return next_entry
 
-find_smallest_priority(frontier)
+find_smallest_priority(frontier, visited_states)
+
+state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
+state_B = (1, 2, 3, 4, 5, 6, 7, 0, 8)
+
+visited_states = {state_A}
+
+frontier = []
+
+heapq.heappush(frontier, (3, state_A))
+heapq.heappush(frontier, (5, state_B))
