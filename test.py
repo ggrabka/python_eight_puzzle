@@ -101,4 +101,109 @@ find_smallest_priority(frontier)
 
 g_scores = {(1, 2, 3, 4, 5, 6, 0, 7, 8): 0}
 
-print(g_scores.keys())
+board = [1, 2, 3, 4, 0, 5, 7, 8, 6]
+
+if 0 in board:
+    print("0 is in the board")
+if 9 not in board:
+    print("9 is absent")
+for x in board:
+    print(x)
+for x in board:
+    if x == 0:
+        continue
+    print(x)
+
+board = [1, 2, 3, 4, 0, 5, 7, 8, 6]
+
+
+board = [1, 2, 3, 4, 5, 0, 7, 8, 6]
+
+empty_index = board.index(0)
+print("index: ", empty_index)
+right_tile_index = empty_index + 1
+if empty_index // 3 != right_tile_index // 3:
+    print("No tile to the right")
+else:
+    print(board[right_tile_index])
+
+state = (1, 2, 3, 4, 0, 5, 7, 8, 6)
+
+state_list = list(state)
+print(state_list)
+state_index_four = state_list[4]
+state_index_five = state_list[5]
+state_list[4] = state_index_five
+state_list[5] = state_index_four
+
+new_state = tuple(state_list)
+print(state, new_state)
+
+state_list = [1, 2, 3, 4, 0, 5, 7, 8, 6]
+state_tuple = (1, 2, 3, 4, 0, 5, 7, 8, 6)
+
+visited = {}
+
+visited[state_tuple] = True
+print(visited)
+
+visited[tuple(state_list)] = True
+print(visited)
+
+state_a = (1, 2, 3, 4, 0, 5, 7, 8, 6)
+state_b = (1, 2, 3, 4, 5, 0, 7, 8, 6)
+state_c = (1, 2, 3, 4, 0, 5, 7, 8, 6)
+
+visited = set()
+visited.add(state_a)
+visited.add(state_b)
+visited.add(state_c)
+print(visited)
+print(len(visited))
+
+if state_b in visited:
+    print("state b is in visited")
+
+visited = {1, 2, 3, 4, 5}
+visited.remove(3)
+print(visited)
+visited.discard(3)
+
+visited = {2, 4, 6, 8}
+
+if 4 in visited:
+    print("four is in visited")
+if 5 not in visited:
+    print("sorry, five is not in visited")
+for x in visited:
+    print(x)
+
+scores = {"state_a": 0, "state_b": 1, "state_c": 2}
+
+print("Print state_b of scores: ", scores["state_b"])
+
+scores["state_c"] = 5
+
+scores["state_d"] = 3
+
+print(scores)
+
+
+scores = {"state_a": 0, "state_b": 1, "state_c": 5}
+
+costs = {(1, 2, 3, 4, 0, 5, 7, 8, 6): 4, (1, 2, 3, 4, 5, 0, 7, 8, 6): 5}
+
+if 5 in costs.values():
+    print("Costs found")
+if (1, 2, 3, 4, 0, 5, 7, 8, 6) in costs:
+    print("state found")
+
+
+scores = {"state_a": 2, "state_b": 5, "state_c": 3}
+
+for x in scores:
+    print(x)
+for x in scores.values():
+    print(x)
+for key, value in scores.items():
+    print(key, "has a value ", value)
