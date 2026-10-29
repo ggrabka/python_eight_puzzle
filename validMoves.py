@@ -313,22 +313,32 @@ def a_star(start_state, heuristic):
     else:
         heapq.heappush(frontier, (score, tuple(start_state)))
     current_state = start_state
-    while current_state != goal_state:
-        next_states = generate_next_states(current_state)
-        visited_states.add(find_smallest_priority(frontier, visited_states))
+    while frontier:
+        frontier_smallest_priority = find_smallest_priority(frontier, visited_states)
+        next_frontier = frontier_smallest_priority[1]
+        if frontier_smallest_priority[1] == tuple(goal_state):
+            print("Finished!")
+            return
+        visited_states.add(next_frontier)
+        next_states = generate_next_states(next_frontier)
         for state in next_states:
             if heuristic == "hamming":
                 score = calculate_hamming_distance(state)
             if heuristic == "manhattan":
                 score = calculate_manhattan_distance(
                     get_row_and_column(state), get_row_and_column(goal_state)
-                )
+                    )
             g_new = g_scores[tuple(current_state)] + 1
             total_cost = calculate_total_cost(score, g_new)
             tuple_state = tuple(state)
             if tuple_state not in g_scores or g_new < g_scores[tuple_state]:
                 g_scores.update({tuple_state: g_new})
                 heapq.heappush(frontier, (total_cost, tuple_state))
-        next_move = find_smallest_priority(frontier, visited_states)
-        current_state = next_move[1]
-        visited_states.add(next_move[1])
+        if next_frontier != None:
+            current_state = next_frontier
+            visited_states.add(next_frontier)
+        else:
+            print("Next move is empty!")
+
+start_state = [1,7,4,6,0,2,1,3,5]
+a_star(start_state, "hamming")

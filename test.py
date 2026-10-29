@@ -1,3 +1,4 @@
+import heapq
 state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
 
 state_tuple = tuple(state)
@@ -103,6 +104,7 @@ g_scores = {(1, 2, 3, 4, 5, 6, 0, 7, 8): 0}
 
 board = [1, 2, 3, 4, 0, 5, 7, 8, 6]
 
+
 if 0 in board:
     print("0 is in the board")
 if 9 not in board:
@@ -207,3 +209,123 @@ for x in scores.values():
     print(x)
 for key, value in scores.items():
     print(key, "has a value ", value)
+
+costs = {
+    "state_a": 3,
+    "state_b": 5
+}
+
+cost_a = costs.get("state_a")
+cost_c = costs.get("state_c")
+cost_b = costs["state_b"]
+cost_c_100 = costs.get("state_c", 100)
+print(cost_a)
+print(cost_b)
+print(cost_c)
+print(cost_c_100)
+print(costs)
+
+state_a = (1, 2, 3, 4, 0, 5, 7, 8, 6)
+state_b = (1, 2, 3, 4, 5, 0, 7, 8, 6)
+state_c = (1, 2, 3, 4, 5, 6, 7, 8, 0)
+
+visited = set()
+g_scores = {}
+
+visited.add(state_a)
+visited.add(state_b)
+
+g_scores[state_a] = 0
+g_scores[state_b] = 1
+
+if state_c not in visited:
+    print("New state discovered")
+
+state_a = (1, 2, 3)
+state_b = (4, 5, 6)
+
+visited = {state_a}
+
+g_scores = {
+    state_a: 0,
+    state_b: 1
+}
+
+tiles = [1, 2, 3, 2, 4, 5]
+
+tiles_tuple = tuple(tiles)
+tiles_set = set(tiles)
+unique_tiles = list(tiles_set)
+
+print("tiles tuple: ", tiles_tuple)
+print("tiles set: ", tiles_set)
+print("tiles unique: ", unique_tiles)
+
+print(len(tiles), len(tiles_set))
+
+state = [1, 2, 3, 4, 0, 5, 7, 8, 6]
+
+visited = set()
+visited.add(tuple(state))
+
+if tuple(state) in visited:
+    print("Already visited")
+
+state = [1, 2, 3, 4, 0, 5, 7, 8, 6]
+
+successor = list(state)
+print("successor: ", successor)
+successor[4] = 5
+successor[5] = 0
+
+print("Original:", state)
+print("Successor:", successor)
+
+state = [1, 2, 3, 4, 0, 5, 7, 8, 6]
+index_zero = state.index(0)
+
+print("zero index", index_zero)
+
+index_right = index_zero + 1
+index_left = index_zero - 1
+
+if(index_zero // 3 == index_right // 3):
+    successor_right_state = list(state)
+    successor_right_state[index_zero] = successor_right_state[index_right]
+    successor_right_state[index_right] = 0
+    successor_right_state = tuple(successor_right_state)
+
+if(index_zero // 3 == index_left // 3):
+    successor_left_state = list(state)
+    successor_left_state[index_zero] = successor_left_state[index_left]
+    successor_left_state[index_left] = 0
+    successor_left_state = tuple(successor_left_state)
+
+
+
+print(state)
+print(successor_left_state)
+print(successor_right_state)
+
+state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
+state_B = (1, 2, 3, 4, 5, 6, 7, 0, 8)
+
+frontier = []
+
+heapq.heappush(frontier, (3, state_A))
+heapq.heappush(frontier, (5, state_B))
+
+smallest_frontier = heapq.heappop(frontier)
+
+print(smallest_frontier[1])
+
+g_scores = {(1, 2, 3, 4, 5, 6, 7, 0, 8) : 0,
+            (1, 2, 3, 4, 5, 6, 7, 0, 8) : 2}
+
+tuple_state = (1, 2, 3, 4, 5, 6, 7, 0, 8)
+g_new = 1
+
+if tuple_state not in g_scores or g_new < g_scores[tuple_state]:
+    g_scores.update({tuple_state: g_new})
+
+print(g_scores)
