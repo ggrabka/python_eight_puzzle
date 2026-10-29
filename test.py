@@ -207,3 +207,10 @@ for x in scores.values():
     print(x)
 for key, value in scores.items():
     print(key, "has a value ", value)
+
+costs = {"state_a": 3, "state_b": 5}
+
+costs_a = costs.get("state_a")
+costs_c = costs.get("state_c", 100)
+
+print(costs_a, costs_c)
