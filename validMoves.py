@@ -1,5 +1,6 @@
 import random
 import heapq
+import time
 
 state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
 
@@ -320,7 +321,7 @@ def a_star(start_state, heuristic):
             print("Frontier empty!")
             return
         if next_frontier == tuple(goal_state):
-            return g_scores[next_frontier]
+            return (g_scores[next_frontier], len(visited_states))
         visited_states.add(next_frontier)
         next_states = generate_next_states(next_frontier)
         for state in next_states:
@@ -338,14 +339,35 @@ def a_star(start_state, heuristic):
                 heapq.heappush(frontier, (total_cost, tuple_state))
 
 
-assert a_star([1, 2, 3, 4, 5, 6, 7, 8, 0], "hamming") == 0
+result = a_star(
+    [1, 2, 3, 4, 5, 6, 0, 7, 8],
+    "hamming"
+)
+print(result)
 
-assert a_star([1, 2, 3, 4, 5, 6, 7, 0, 8], "hamming") == 1
+test_state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
 
-assert a_star([1, 2, 3, 4, 5, 6, 0, 7, 8], "hamming") == 2
+hamming_result = a_star(test_state, "hamming")
+manhattan_result = a_star(test_state, "manhattan")
 
-assert a_star([1, 2, 3, 4, 5, 6, 7, 8, 0], "manhattan") == 0
+print(hamming_result[1])
+print(manhattan_result[1])
 
-assert a_star([1, 2, 3, 4, 5, 6, 7, 0, 8], "manhattan") == 1
 
-assert a_star([1, 2, 3, 4, 5, 6, 0, 7, 8], "manhattan") == 2
+
+test_set = set()
+
+while len(test_set) < 100:
+    test_set.add(tuple(generate_random_state()))
+
+print(test_set)
+
+start_time = time.perf_counter()
+
+a_star(test_state, "hamming")
+
+end_time = time.perf_counter()
+
+elapsed_time = end_time - start_time
+
+print(elapsed_time)
