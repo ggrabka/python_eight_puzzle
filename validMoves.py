@@ -1,6 +1,7 @@
 import random
 import heapq
 import time
+import statistics
 
 state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
 
@@ -353,21 +354,49 @@ manhattan_result = a_star(test_state, "manhattan")
 print(hamming_result[1])
 print(manhattan_result[1])
 
-
-
 test_set = set()
 
 while len(test_set) < 100:
     test_set.add(tuple(generate_random_state()))
 
-print(test_set)
+def solveEightPuzzle(test_states, heuristic):
+    results = []
 
-start_time = time.perf_counter()
+    for state in test_states:
+        start_time = time.perf_counter()
 
-a_star(test_state, "hamming")
+        solution_length, expanded_nodes = a_star(state, heuristic)
 
-end_time = time.perf_counter()
+        end_time = time.perf_counter()
+        elapsed_time = end_time - start_time
 
-elapsed_time = end_time - start_time
+        results.append((solution_length, expanded_nodes, elapsed_time))
 
-print(elapsed_time)
+    return results
+
+test_states = list(test_set)
+
+hamming_results = solveEightPuzzle(test_states, "hamming")
+manhattan_results = solveEightPuzzle(test_states, "manhattan")
+
+assert len(hamming_results) == 100
+assert len(manhattan_results) == 100
+
+for hamming, manhattan in zip(hamming_results, manhattan_results):
+    assert hamming[0] == manhattan[0]
+
+import statistics
+
+def calculate_statistics(results):
+    expanded_nodes = [result[1] for result in results]
+    execution_times = [result[2] for result in results]
+
+    return {
+        "mean_expanded_nodes": statistics.mean(expanded_nodes),
+        "std_expanded_nodes": statistics.stdev(expanded_nodes),
+        "mean_execution_time": statistics.mean(execution_times),
+        "std_execution_time": statistics.stdev(execution_times)
+    }
+
+print("Hamming:", calculate_statistics(hamming_results))
+print("Manhattan:", calculate_statistics(manhattan_results))
