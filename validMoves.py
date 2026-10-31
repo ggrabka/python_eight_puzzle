@@ -1,9 +1,11 @@
-import random
-import heapq
-import time
-import statistics
+"""8-puzzle heuristic search: Hamming versus Manhattan distance."""
 
-state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
+import heapq
+import random
+import statistics
+import time
+
+GOAL_STATE = (1, 2, 3, 4, 5, 6, 7, 8, 0)
 
 
 def get_valid_moves(state):
@@ -32,82 +34,31 @@ def generate_next_states(state):
     valid_moves = get_valid_moves(state)
     move_collection = []
     for move in valid_moves:
-        new_list = list(state).copy()
+        new_list = list(state)
         zero_value_index = new_list.index(0)
         new_list[zero_value_index], new_list[move] = (
-            new_list[move],
-            new_list[zero_value_index],
+            new_list[move], new_list[zero_value_index]
         )
         move_collection.append(new_list)
     return move_collection
 
 
-generate_next_states(state)
-
-# tests
-
-state_corner = [1, 2, 3, 4, 5, 6, 0, 7, 8]
-state_center = [1, 2, 3, 4, 0, 5, 6, 7, 8]
-state_edge = [1, 0, 2, 3, 4, 5, 6, 7, 8]
-
-assert len(generate_next_states(state_corner)) == 2
-assert len(generate_next_states(state_center)) == 4
-assert len(generate_next_states(state_edge)) == 3
-
-state = [1, 2, 3, 4, 0, 5, 6, 7, 8]
-
-original_state = state.copy()
-
-generate_next_states(state)
-
-assert state == original_state
-
-successors = generate_next_states(state)
-
-for successor in successors:
-    assert sorted(successor) == list(range(9))
-
-state = [1, 2, 3, 4, 0, 5, 6, 7, 8]
-
-first_result = generate_next_states(state)
-second_result = generate_next_states(state)
-
-assert first_result == second_result
-
-state = [4, 2, 3, 5, 1, 6, 0, 7, 8]
-
-
 def count_inversions(state):
     inversion_count = 0
-    for index, currentState in enumerate(state):
-        if currentState == 0:
+    for index, current_state in enumerate(state):
+        if current_state == 0:
             continue
-        for x in state[index + 1 :]:
+        for x in state[index + 1:]:
             if x == 0:
                 continue
-            if currentState > x:
+            if current_state > x:
                 inversion_count += 1
     return inversion_count
-
-
-count_inversions(state)
-
-# tests
-assert count_inversions([1, 2, 3, 4, 5, 6, 7, 8, 0]) == 0
-assert count_inversions([2, 1, 3, 4, 5, 6, 8, 7, 0]) == 2
-assert count_inversions([3, 2, 1, 4, 5, 6, 7, 8, 0]) == 3
-assert count_inversions([8, 7, 6, 5, 4, 3, 2, 1, 0]) == 28
 
 
 def is_solvable(state):
     inversion_count = count_inversions(state)
     return inversion_count % 2 == 0
-
-
-# tests
-assert is_solvable([1, 2, 3, 4, 5, 6, 7, 8, 0]) == True
-assert is_solvable([1, 2, 3, 4, 5, 6, 8, 7, 0]) == False
-assert is_solvable([2, 1, 3, 4, 5, 6, 8, 7, 0]) == True
 
 
 def generate_random_state():
@@ -118,54 +69,12 @@ def generate_random_state():
             return numbers
 
 
-generate_random_state()
-
-# tests
-random_state = generate_random_state()
-
-assert len(random_state) == 9
-assert sorted(random_state) == list(range(9))
-assert is_solvable(random_state)
-
-for i in range(100):
-    new_state = generate_random_state()
-    assert is_solvable(new_state), f"Invalid state: {new_state}"
-
-current_state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
-
-g_scores = {tuple(current_state): 4}
-
-next_states = generate_next_states(current_state)
-
-for state in next_states:
-    state_tuple = tuple(state)
-    new_g = g_scores[tuple(current_state)] + 1
-    if state_tuple not in g_scores or new_g < g_scores[state_tuple]:
-        g_scores[state_tuple] = new_g
-print(g_scores)
-
-state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
-
-
 def calculate_hamming_distance(state):
     misplaced_tiles = 0
-    goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
     for index, tile in enumerate(state):
-        if tile != goal_state[index] and tile != 0:
+        if tile != GOAL_STATE[index] and tile != 0:
             misplaced_tiles += 1
     return misplaced_tiles
-
-
-calculate_hamming_distance(state)
-
-# tests
-assert calculate_hamming_distance([1, 2, 3, 4, 5, 6, 7, 8, 0]) == 0
-
-assert calculate_hamming_distance([1, 2, 3, 4, 5, 6, 7, 0, 8]) == 1
-
-assert calculate_hamming_distance([1, 2, 3, 4, 5, 6, 0, 7, 8]) == 2
-
-assert calculate_hamming_distance([1, 2, 3, 4, 0, 6, 7, 5, 8]) == 2
 
 
 def get_row_and_column(state):
@@ -174,12 +83,6 @@ def get_row_and_column(state):
     for index, tile in enumerate(state):
         coordinates[tile] = [index // tiles_dimension, index % tiles_dimension]
     return coordinates
-
-
-get_row_and_column(state)
-
-current_coordinates = get_row_and_column(state)
-goal_coordinates = get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0])
 
 
 def calculate_manhattan_distance(current_coordinates, goal_coordinates):
@@ -193,64 +96,8 @@ def calculate_manhattan_distance(current_coordinates, goal_coordinates):
     return sum(distance.values())
 
 
-calculate_manhattan_distance(current_coordinates, goal_coordinates)
-
-# tests
-assert (
-    calculate_manhattan_distance(
-        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
-        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
-    )
-    == 0
-)
-
-assert (
-    calculate_manhattan_distance(
-        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 0, 8]),
-        get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0]),
-    )
-    == 1
-)
-
-current_state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
-
-g_scores = {tuple(current_state): 0}
-
-goal_coordinates = get_row_and_column([1, 2, 3, 4, 5, 6, 7, 8, 0])
-
-hamming_score = calculate_hamming_distance(current_state)
-manhattan_score = calculate_manhattan_distance(
-    get_row_and_column(current_state), goal_coordinates
-)
-current_score = g_scores[tuple(current_state)]
-print("Current score: ", current_score)
-print("Hamming score: ", hamming_score)
-
-
 def calculate_total_cost(current_score, distance_score):
     return current_score + distance_score
-
-
-calculate_total_cost(current_score, hamming_score)
-
-state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
-state_B = (1, 2, 3, 4, 5, 6, 7, 0, 8)
-state_C = (1, 2, 3, 4, 5, 6, 7, 8, 0)
-
-frontier = []
-
-heapq.heappush(frontier, (8, state_A))
-heapq.heappush(frontier, (3, state_B))
-heapq.heappush(frontier, (5, state_C))
-
-visited_states = set()
-
-state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
-
-visited_states.add(state_A)
-
-frontier = []
-heapq.heappush(frontier, (10, state_A))
 
 
 def find_smallest_priority(frontier, visited_states):
@@ -258,145 +105,141 @@ def find_smallest_priority(frontier, visited_states):
         next_entry = heapq.heappop(frontier)
         if next_entry[1] not in visited_states:
             return next_entry
-
-
-find_smallest_priority(frontier, visited_states)
-
-state_A = (1, 2, 3, 4, 5, 6, 0, 7, 8)
-state_B = (1, 2, 3, 4, 5, 6, 7, 0, 8)
-
-visited_states = set({state_A})
-
-frontier = []
-
-heapq.heappush(frontier, (3, state_A))
-heapq.heappush(frontier, (5, state_B))
-
-assert find_smallest_priority(frontier, visited_states) == (5, state_B)
-
-frontier = []
-
-heapq.heappush(frontier, (3, state_A))
-heapq.heappush(frontier, (5, state_B))
-
-visited_states = set({state_A, state_B})
-
-assert find_smallest_priority(frontier, visited_states) == None
-
-frontier = []
-
-heapq.heappush(frontier, (3, state_A))
-heapq.heappush(frontier, (5, state_B))
-
-visited_states = set()
-
-assert find_smallest_priority(frontier, visited_states) == (3, state_A)
-
-frontier = []
-visited_states = set()
-
-assert find_smallest_priority(frontier, visited_states) == None
+    return None
 
 
 def a_star(start_state, heuristic):
-    goal_state = [1, 2, 3, 4, 5, 6, 7, 8, 0]
+    """Return (solution length, expanded states), or None if unsolvable."""
+    if not is_solvable(start_state):
+        return None
+    if heuristic not in ("hamming", "manhattan"):
+        raise ValueError("heuristic must be 'hamming' or 'manhattan'")
+
     visited_states = set()
     g_scores = {tuple(start_state): 0}
     frontier = []
+    goal_coordinates = get_row_and_column(GOAL_STATE)
+
     if heuristic == "hamming":
         score = calculate_hamming_distance(start_state)
-    if heuristic == "manhattan":
-        score = calculate_manhattan_distance(
-            get_row_and_column(start_state), get_row_and_column(goal_state)
-        )
-    if is_solvable(start_state) == False:
-        print("Invalid start state!")
-        return
     else:
-        heapq.heappush(frontier, (score, tuple(start_state)))
+        score = calculate_manhattan_distance(
+            get_row_and_column(start_state), goal_coordinates
+        )
+    heapq.heappush(frontier, (score, tuple(start_state)))
+
     while frontier:
         frontier_smallest_priority = find_smallest_priority(frontier, visited_states)
-        if frontier_smallest_priority is not None:
-            next_frontier = frontier_smallest_priority[1]
-        else:
-            print("Frontier empty!")
-            return
-        if next_frontier == tuple(goal_state):
-            return (g_scores[next_frontier], len(visited_states))
+        if frontier_smallest_priority is None:
+            return None
+
+        next_frontier = frontier_smallest_priority[1]
+        if next_frontier == GOAL_STATE:
+            return g_scores[next_frontier], len(visited_states)
+
         visited_states.add(next_frontier)
         next_states = generate_next_states(next_frontier)
         for state in next_states:
             if heuristic == "hamming":
                 score = calculate_hamming_distance(state)
-            if heuristic == "manhattan":
+            else:
                 score = calculate_manhattan_distance(
-                    get_row_and_column(state), get_row_and_column(goal_state)
+                    get_row_and_column(state), goal_coordinates
                 )
             g_new = g_scores[next_frontier] + 1
             total_cost = calculate_total_cost(score, g_new)
             tuple_state = tuple(state)
             if tuple_state not in g_scores or g_new < g_scores[tuple_state]:
-                g_scores.update({tuple_state: g_new})
+                g_scores[tuple_state] = g_new
                 heapq.heappush(frontier, (total_cost, tuple_state))
+    return None
 
-
-result = a_star(
-    [1, 2, 3, 4, 5, 6, 0, 7, 8],
-    "hamming"
-)
-print(result)
-
-test_state = [1, 2, 3, 4, 5, 6, 0, 7, 8]
-
-hamming_result = a_star(test_state, "hamming")
-manhattan_result = a_star(test_state, "manhattan")
-
-print(hamming_result[1])
-print(manhattan_result[1])
-
-test_set = set()
-
-while len(test_set) < 100:
-    test_set.add(tuple(generate_random_state()))
 
 def solveEightPuzzle(test_states, heuristic):
+    """Collect (solution length, expanded nodes, elapsed seconds) per state."""
     results = []
-
     for state in test_states:
         start_time = time.perf_counter()
-
         solution_length, expanded_nodes = a_star(state, heuristic)
-
-        end_time = time.perf_counter()
-        elapsed_time = end_time - start_time
-
+        elapsed_time = time.perf_counter() - start_time
         results.append((solution_length, expanded_nodes, elapsed_time))
-
     return results
 
-test_states = list(test_set)
-
-hamming_results = solveEightPuzzle(test_states, "hamming")
-manhattan_results = solveEightPuzzle(test_states, "manhattan")
-
-assert len(hamming_results) == 100
-assert len(manhattan_results) == 100
-
-for hamming, manhattan in zip(hamming_results, manhattan_results):
-    assert hamming[0] == manhattan[0]
-
-import statistics
 
 def calculate_statistics(results):
     expanded_nodes = [result[1] for result in results]
     execution_times = [result[2] for result in results]
-
     return {
         "mean_expanded_nodes": statistics.mean(expanded_nodes),
         "std_expanded_nodes": statistics.stdev(expanded_nodes),
         "mean_execution_time": statistics.mean(execution_times),
-        "std_execution_time": statistics.stdev(execution_times)
+        "std_execution_time": statistics.stdev(execution_times),
     }
 
-print("Hamming:", calculate_statistics(hamming_results))
-print("Manhattan:", calculate_statistics(manhattan_results))
+
+def run_tests():
+    """Quick correctness and helper-function regression checks."""
+    assert len(generate_next_states([1, 2, 3, 4, 5, 6, 0, 7, 8])) == 2
+    assert len(generate_next_states([1, 2, 3, 4, 0, 5, 6, 7, 8])) == 4
+    assert len(generate_next_states([1, 0, 2, 3, 4, 5, 6, 7, 8])) == 3
+    state = [1, 2, 3, 4, 0, 5, 6, 7, 8]
+    original = state.copy()
+    successors = generate_next_states(state)
+    assert state == original
+    assert all(sorted(successor) == list(range(9)) for successor in successors)
+    assert successors == generate_next_states(state)
+
+    assert count_inversions(GOAL_STATE) == 0
+    assert count_inversions([2, 1, 3, 4, 5, 6, 8, 7, 0]) == 2
+    assert count_inversions([3, 2, 1, 4, 5, 6, 7, 8, 0]) == 3
+    assert count_inversions([8, 7, 6, 5, 4, 3, 2, 1, 0]) == 28
+    assert is_solvable(GOAL_STATE)
+    assert not is_solvable([1, 2, 3, 4, 5, 6, 8, 7, 0])
+    assert is_solvable([2, 1, 3, 4, 5, 6, 8, 7, 0])
+
+    for state, expected in [
+        (GOAL_STATE, 0),
+        ([1, 2, 3, 4, 5, 6, 7, 0, 8], 1),
+        ([1, 2, 3, 4, 5, 6, 0, 7, 8], 2),
+    ]:
+        assert calculate_hamming_distance(state) == expected
+        assert calculate_manhattan_distance(
+            get_row_and_column(state), get_row_and_column(GOAL_STATE)
+        ) == expected
+        for heuristic in ("hamming", "manhattan"):
+            assert a_star(state, heuristic)[0] == expected
+
+    assert calculate_hamming_distance([1, 2, 3, 4, 0, 6, 7, 5, 8]) == 2
+    assert a_star([1, 2, 3, 5, 0, 6, 4, 7, 8], "hamming")[0] == 4
+    assert a_star([1, 2, 3, 5, 0, 6, 4, 7, 8], "manhattan")[0] == 4
+
+    state_a = (1, 2, 3, 4, 5, 6, 0, 7, 8)
+    state_b = (1, 2, 3, 4, 5, 6, 7, 0, 8)
+    for visited, expected in [({state_a}, (5, state_b)),
+                              ({state_a, state_b}, None),
+                              (set(), (3, state_a))]:
+        frontier = [(3, state_a), (5, state_b)]
+        heapq.heapify(frontier)
+        assert find_smallest_priority(frontier, visited) == expected
+    assert find_smallest_priority([], set()) is None
+
+
+def main():
+    run_tests()
+    test_set = set()
+    while len(test_set) < 100:
+        test_set.add(tuple(generate_random_state()))
+    test_states = list(test_set)
+
+    hamming_results = solveEightPuzzle(test_states, "hamming")
+    manhattan_results = solveEightPuzzle(test_states, "manhattan")
+    assert len(hamming_results) == len(manhattan_results) == 100
+    for hamming, manhattan in zip(hamming_results, manhattan_results):
+        assert hamming[0] == manhattan[0]
+
+    print("Hamming:", calculate_statistics(hamming_results))
+    print("Manhattan:", calculate_statistics(manhattan_results))
+
+
+if __name__ == "__main__":
+    main()
