@@ -1,5 +1,3 @@
-"""8-puzzle heuristic search: Hamming versus Manhattan distance."""
-
 import heapq
 import random
 import statistics
